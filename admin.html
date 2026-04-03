@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - MaheHub</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <div class="logo">MAHE<span>HUB</span></div>
+        <div class="user-info">
+            <span id="user-info-name" style="color: var(--text-secondary); font-family: 'Inter', sans-serif;"></span>
+            <button class="logout-btn" onclick="logout()">Logout</button>
+        </div>
+    </header>
+
+    <div class="layout-wrapper">
+        <aside class="sidebar">
+            <button class="sidebar-btn active" onclick="switchTab('dashboard')">1. Dashboard</button>
+            <button class="sidebar-btn" onclick="switchTab('pending')">2. Pending Events</button>
+            <button class="sidebar-btn" onclick="switchTab('history')">3. History</button>
+        </aside>
+
+        <main class="main-content">
+            <!-- Dashboard Tab -->
+            <section id="tab-dashboard" class="tab-section active">
+                <h2 class="mb-2">System Overview</h2>
+                <div class="glass-card mb-2" style="display: flex; gap: 2rem; justify-content: space-around;">
+                    <div class="text-center">
+                        <h3 style="color: var(--text-secondary); font-size: 0.9rem;">Pending</h3>
+                        <div id="stat-pending" style="font-size: 2.5rem; font-family: 'Syncopate', sans-serif; color: #f39c12;">0</div>
+                    </div>
+                    <div class="text-center">
+                        <h3 style="color: var(--text-secondary); font-size: 0.9rem;">Approved</h3>
+                        <div id="stat-approve" style="font-size: 2.5rem; font-family: 'Syncopate', sans-serif; color: #27ae60;">0</div>
+                    </div>
+                    <div class="text-center">
+                        <h3 style="color: var(--text-secondary); font-size: 0.9rem;">Rejected</h3>
+                        <div id="stat-reject" style="font-size: 2.5rem; font-family: 'Syncopate', sans-serif; color: #e74c3c;">0</div>
+                    </div>
+                    <div class="text-center">
+                        <h3 style="color: var(--text-secondary); font-size: 0.9rem;">Drafts</h3>
+                        <div id="stat-draft" style="font-size: 2.5rem; font-family: 'Syncopate', sans-serif; color: #95a5a6;">0</div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Pending Tab -->
+            <section id="tab-pending" class="tab-section">
+                <h3 class="mb-2">Pending Events</h3>
+                <div id="pending-events" class="events-grid">
+                    <p style="color: var(--text-secondary);">Waiting for real-time updates...</p>
+                </div>
+            </section>
+
+            <!-- History Tab -->
+            <section id="tab-history" class="tab-section">
+                <h3 class="mb-2">Evaluated History</h3>
+                <div id="all-events" class="events-grid">
+                    <p style="color: var(--text-secondary);">Waiting for real-time updates...</p>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="app.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            checkAuth('admin');
+            
+            document.addEventListener('mahehub_sync', (e) => {
+                const data = e.detail;
+                
+                // Update stats
+                document.getElementById('stat-pending').textContent = data.stats['pending'] || 0;
+                document.getElementById('stat-approve').textContent = data.stats['approve'] || 0;
+                document.getElementById('stat-reject').textContent = data.stats['reject'] || 0;
+                document.getElementById('stat-draft').textContent = data.stats['draft'] || 0;
+                
+                // Render Events
+                const pendingContainer = document.getElementById('pending-events');
+                const allContainer = document.getElementById('all-events');
+                
+                pendingContainer.innerHTML = '';
+                allContainer.innerHTML = '';
+                
+                let hasPending = false;
+                let hasHistory = false;
+                
+                if (data.events) {
+                    data.events.forEach(evt => {
+                        const cardHtml = `
+                            <div class="glass-card event-card">
+                                <div class="event-header">
+                                    <span class="event-status status-${evt.status}">${evt.status}</span>
+                                </div>
+                                <h3 class="event-title">${evt.title}</h3>
+                                <p class="event-desc">${evt.description}</p>
+                                <div class="event-details">
+                                    <div class="event-meta">
+                                        <span>Date: <strong>${evt.date}</strong></span>
+                                        <span>Time: <strong>${evt.time}</strong></span>
+                                    </div>
+                                    <div class="event-meta">
+                                        <span>Organiser: <strong>${evt.organiser_name}</strong></span>
+                                        <span>Registrations: <strong>${evt.registration_count}</strong></span>
+                                    </div>
+                                    ${evt.status === 'pending' ? `
+                                        <div style="display: flex; gap: 1rem; margin-top: 1rem;">
+                                            <button class="btn-primary" style="background-color: #27ae60;" onclick="updateEventStatus(${evt.id}, 'approve')">Approve</button>
+                                            <button class="btn-primary" style="background-color: #c0392b;" onclick="updateEventStatus(${evt.id}, 'reject')">Reject</button>
+                                        </div>
+                                    ` : ''}
+                                </div>
+                            </div>
+                        `;
+                        
+                        if (evt.status === 'pending') {
+                            pendingContainer.innerHTML += cardHtml;
+                            hasPending = true;
+                        } else if (evt.status === 'approve' || evt.status === 'reject') {
+                            allContainer.innerHTML += cardHtml;
+                            hasHistory = true;
+                        }
+                    });
+                }
+                
+                if (!hasPending) pendingContainer.innerHTML = '<p style="color: var(--text-secondary);">No pending events.</p>';
+                if (!hasHistory) allContainer.innerHTML = '<p style="color: var(--text-secondary);">No evaluated events yet.</p>';
+            });
+            
+            document.addEventListener('mahehub_response_update_event_status', (e) => {
+                if (!e.detail.success) alert('Failed to update event status: ' + (e.detail.message || 'Unknown error'));
+            });
+        });
+
+        function updateEventStatus(eventId, status) {
+            sendAction('update_event_status', { event_id: eventId, status: status });
+        }
+
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-section').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.sidebar-btn').forEach(el => el.classList.remove('active'));
+            document.getElementById('tab-' + tabId).classList.add('active');
+            let tabs = {'dashboard': 0, 'pending': 1, 'history': 2};
+            document.querySelectorAll('.sidebar-btn')[tabs[tabId]].classList.add('active');
+        }
+    </script>
+</body>
+</html>

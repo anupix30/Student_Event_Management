@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Organizer Portal - MaheHub</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/themes/dark.css">
+</head>
+<body>
+    <header>
+        <div class="logo">MAHE<span>HUB</span></div>
+        <div class="user-info">
+            <span id="user-info-name" style="color: var(--text-secondary); font-family: 'Inter', sans-serif;"></span>
+            <button class="logout-btn" onclick="logout()">Logout</button>
+        </div>
+    </header>
+
+    <div class="layout-wrapper">
+        <aside class="sidebar">
+            <button class="sidebar-btn active" onclick="switchTab('create')">1. Create Events</button>
+            <button class="sidebar-btn" onclick="switchTab('drafts')">2. Drafted Events</button>
+            <button class="sidebar-btn" onclick="switchTab('history')">3. History</button>
+        </aside>
+
+        <main class="main-content">
+            <!-- Create Tab -->
+            <section id="tab-create" class="tab-section active">
+                <div style="max-width: 600px;">
+                    <h2 class="mb-2">Propose New Event</h2>
+                    <div class="glass-card">
+                        <form id="propose-form">
+                            <!-- Hidden ID for loading drafts -->
+                            <input type="hidden" id="draft-id" value="">
+                            
+                            <div class="form-group">
+                                <label for="event-title">Event Title</label>
+                                <input type="text" id="event-title" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="event-desc">Description</label>
+                                <textarea id="event-desc" rows="4" required></textarea>
+                            </div>
+                            <div class="form-group" style="display: flex; gap: 1rem;">
+                                <div style="flex: 1;">
+                                    <label for="event-date">Date</label>
+                                    <input type="text" id="event-date" placeholder="Select Date">
+                                </div>
+                                <div style="flex: 1;">
+                                    <label for="event-time">Time</label>
+                                    <input type="text" id="event-time" placeholder="Select Time">
+                                </div>
+                            </div>
+                            <div style="display: flex; gap: 1rem; margin-top: 2rem;">
+                                <button type="button" class="btn-secondary" onclick="submitEvent(true)" style="flex: 1;">Save as Draft</button>
+                                <button type="button" class="btn-primary" onclick="submitEvent(false)" style="flex: 1;">Send to Admin</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Drafts Tab -->
+            <section id="tab-drafts" class="tab-section">
+                <h3 class="mb-2">My Drafts</h3>
+                <p style="color: var(--text-secondary); margin-bottom: 1rem;">Click on any draft to load it back into the Create Form.</p>
+                <div id="draft-events" class="events-grid">
+                    <p style="color: var(--text-secondary);">No drafts found.</p>
+                </div>
+            </section>
+
+            <!-- History Tab -->
+            <section id="tab-history" class="tab-section">
+                <h3 class="mb-2">Event History</h3>
+                <div id="history-events" class="events-grid">
+                    <p style="color: var(--text-secondary);">Loading history...</p>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="app.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script>
+        let datePicker, timePicker;
+        
+        document.addEventListener('DOMContentLoaded', () => {
+            checkAuth('organiser'); 
+            
+            datePicker = flatpickr("#event-date", {
+                allowInput: false, 
+                theme: "dark",
+                minDate: "today"
+            });
+            
+            timePicker = flatpickr("#event-time", {
+                enableTime: true,
+                noCalendar: true,
+                dateFormat: "H:i",
+                minuteIncrement: 15,
+                allowInput: false,
+                theme: "dark"
+            });
+            
+            // Fetch history immediately on load
+            sendAction('fetch_history', { user_id: currentUser.id, role: currentUser.role });
+            
+            document.addEventListener('mahehub_response_propose_event', handleProposeResponse);
+            document.addEventListener('mahehub_response_update_draft', handleProposeResponse);
+            
+            document.addEventListener('mahehub_response_fetch_history', (e) => {
+                const data = e.detail;
+                if (!data.success) return;
+                
+                const draftsContainer = document.getElementById('draft-events');
+                const historyContainer = document.getElementById('history-events');
+                
+                draftsContainer.innerHTML = '';
+                historyContainer.innerHTML = '';
+                
+                let hasDrafts = false;
+                let hasHistory = false;
+                
+                data.history.forEach(evt => {
+                    if (evt.status === 'draft') {
+                        // Draft Card
+                        const escapedEvent = encodeURIComponent(JSON.stringify(evt));
+                        const html = `
+                            <div class="glass-card event-card" style="cursor: pointer; border-color: #95a5a6;" onclick="loadDraft('${escapedEvent}')">
+                                <div class="event-header"><span class="event-status status-draft">DRAFT</span></div>
+                                <h3 class="event-title">${evt.title}</h3>
+                                <p class="event-desc">${evt.description}</p>
+                            </div>
+                        `;
+                        draftsContainer.innerHTML += html;
+                        hasDrafts = true;
+                    } else {
+                        // History Card
+                        const html = `
+                            <div class="glass-card event-card">
+                                <div class="event-header"><span class="event-status status-${evt.status}">${evt.status}</span></div>
+                                <h3 class="event-title">${evt.title}</h3>
+                                <div class="event-details" style="padding-top: 0.5rem; margin-top: 0;">
+                                    <div class="event-meta">
+                                        <span>Date: <strong>${evt.date}</strong></span>
+                                        <span>Time: <strong>${evt.time}</strong></span>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                        historyContainer.innerHTML += html;
+                        hasHistory = true;
+                    }
+                });
+                
+                if (!hasDrafts) draftsContainer.innerHTML = '<p style="color: var(--text-secondary);">No drafts found.</p>';
+                if (!hasHistory) historyContainer.innerHTML = '<p style="color: var(--text-secondary);">No event history found.</p>';
+            });
+            
+            // Re-fetch our specific history on global sync to ensure we get updates (like approvals)
+            document.addEventListener('mahehub_sync', () => {
+                sendAction('fetch_history', { user_id: currentUser.id, role: currentUser.role });
+            });
+        });
+
+        function handleProposeResponse(e) {
+            const data = e.detail;
+            if (data.success) {
+                alert(data.is_draft ? 'Saved securely as a draft!' : 'Event proposed and sent to Admin!');
+                document.getElementById('propose-form').reset();
+                document.getElementById('draft-id').value = '';
+                datePicker.clear();
+                timePicker.clear();
+                if (!data.is_draft) {
+                    switchTab('history');
+                } else {
+                    switchTab('drafts');
+                }
+            } else {
+                alert('Action failed: ' + (data.message || 'Unknown error'));
+            }
+        }
+
+        function submitEvent(isDraft) {
+            const title = document.getElementById('event-title').value;
+            const desc = document.getElementById('event-desc').value;
+            const date = document.getElementById('event-date').value;
+            const time = document.getElementById('event-time').value;
+            const draftId = document.getElementById('draft-id').value;
+            
+            if (!title || !desc) {
+                alert("Title and Description are required, even for drafts!");
+                return;
+            }
+            if (!isDraft && (!date || !time)) {
+                alert("Date and Time are required to actually send the event!");
+                return;
+            }
+            
+            const payload = {
+                title: title, description: desc,
+                date: date, time: time,
+                is_draft: isDraft,
+                organiser_id: currentUser.id
+            };
+            
+            // Send action to server
+            if (draftId) {
+                payload.event_id = draftId;
+                sendAction('update_draft', payload);
+            } else {
+                sendAction('propose_event', payload);
+            }
+        }
+
+        function loadDraft(encodedJson) {
+            const evt = JSON.parse(decodeURIComponent(encodedJson));
+            document.getElementById('draft-id').value = evt.id;
+            document.getElementById('event-title').value = evt.title;
+            document.getElementById('event-desc').value = evt.description;
+            
+            if (evt.date && evt.date !== '') datePicker.setDate(evt.date); else datePicker.clear();
+            if (evt.time && evt.time !== '') timePicker.setDate(evt.time); else timePicker.clear();
+            
+            switchTab('create');
+        }
+
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-section').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.sidebar-btn').forEach(el => el.classList.remove('active'));
+            document.getElementById('tab-' + tabId).classList.add('active');
+            let tabs = {'create': 0, 'drafts': 1, 'history': 2};
+            document.querySelectorAll('.sidebar-btn')[tabs[tabId]].classList.add('active');
+        }
+    </script>
+</body>
+</html>

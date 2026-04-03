@@ -1,0 +1,353 @@
+/* Deep Cinematic Dark Mode - Netflix Aesthetic */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Syncopate:wght@400;700&display=swap');
+
+:root {
+  --primary-bg: #000000;
+  --secondary-bg: #0a0a0a;
+  --accent-red: #e50914;
+  --accent-hover: #f40612;
+  --border-grey: #222222;
+  --text-primary: #ffffff;
+  --text-secondary: #b3b3b3;
+  --glass-bg: rgba(10, 10, 10, 0.7);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 14px; /* Reduced overall sizing per user request */
+}
+
+body {
+  font-family: 'Inter', sans-serif;
+  background-color: var(--primary-bg);
+  background: radial-gradient(circle at top right, #1a0203, #000000 60%);
+  color: var(--text-primary);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Syncopate', sans-serif;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 1.5rem;
+  width: 100%;
+}
+
+/* Sidebar Layout Systems */
+.layout-wrapper {
+  display: flex;
+  flex: 1;
+  height: calc(100vh - 70px);
+}
+
+.sidebar {
+  width: 250px;
+  background: var(--secondary-bg);
+  border-right: 1px solid var(--border-grey);
+  padding: 2rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.sidebar-btn {
+  background: transparent;
+  color: var(--text-secondary);
+  border: 1px solid transparent;
+  text-align: left;
+  padding: 1rem;
+  font-family: 'Syncopate', sans-serif;
+  font-size: 0.85rem;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.sidebar-btn:hover {
+  background: rgba(229, 9, 20, 0.1);
+  color: var(--accent-red);
+}
+
+.sidebar-btn.active {
+  background: var(--accent-red);
+  color: white;
+}
+
+.main-content {
+  flex: 1;
+  padding: 2rem;
+  overflow-y: auto;
+}
+
+.tab-section {
+  display: none;
+}
+.tab-section.active {
+  display: block;
+  animation: fadeIn 0.3s ease;
+}
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Glassmorphism Cards */
+.glass-card {
+  background: var(--glass-bg);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid var(--border-grey);
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5);
+}
+
+/* Form Elements */
+.form-group {
+  margin-bottom: 1.2rem;
+}
+
+label {
+  display: block;
+  margin-bottom: 0.4rem;
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+}
+
+input, select, textarea {
+  width: 100%;
+  padding: 0.7rem 1rem;
+  background-color: var(--secondary-bg);
+  border: 1px solid var(--border-grey);
+  border-radius: 6px;
+  color: var(--text-primary);
+  font-family: 'Inter', sans-serif;
+  transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+input:focus, select:focus, textarea:focus {
+  outline: none;
+  border-color: var(--accent-red);
+  box-shadow: 0 0 8px rgba(229, 9, 20, 0.3);
+}
+
+/* Red Hover Glow Buttons */
+.btn-primary {
+  background-color: var(--accent-red);
+  color: white;
+  border: none;
+  padding: 0.7rem 1.2rem;
+  font-family: 'Syncopate', sans-serif;
+  font-size: 0.85rem;
+  font-weight: bold;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  width: 100%;
+  text-transform: uppercase;
+}
+
+.btn-primary:hover {
+  background-color: var(--accent-hover);
+  box-shadow: 0 0 15px var(--accent-red);
+  transform: translateY(-2px);
+}
+
+/* Header */
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 2rem;
+  border-bottom: 1px solid var(--border-grey);
+  background: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(10px);
+  height: 70px;
+}
+
+.logo {
+  font-family: 'Syncopate', sans-serif;
+  font-size: 1.3rem;
+  font-weight: bold;
+  color: var(--accent-red);
+}
+
+.logo span {
+  color: white;
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.logout-btn {
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  cursor: pointer;
+  font-family: 'Inter', sans-serif;
+  transition: color 0.3s;
+}
+
+.logout-btn:hover {
+  color: var(--accent-red);
+}
+
+/* Utilities */
+.text-center { text-align: center; }
+.mt-2 { margin-top: 1.5rem; }
+.mb-2 { margin-bottom: 1.5rem; }
+.hidden { display: none !important; }
+
+/* Grid for events */
+.events-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1.5rem;
+}
+
+.event-card {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.event-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 0.8rem;
+}
+
+.event-status {
+  text-transform: uppercase;
+  font-size: 0.65rem;
+  font-weight: bold;
+  padding: 0.3rem 0.6rem;
+  border-radius: 4px;
+  letter-spacing: 1px;
+}
+
+.status-pending { background-color: rgba(243, 156, 18, 0.2); color: #f39c12; border: 1px solid #f39c12; }
+.status-approve { background-color: rgba(39, 174, 96, 0.2); color: #27ae60; border: 1px solid #27ae60; }
+.status-reject  { background-color: rgba(192, 57, 43, 0.2); color: #e74c3c; border: 1px solid #e74c3c; }
+.status-draft   { background-color: rgba(149, 165, 166, 0.2); color: #95a5a6; border: 1px solid #95a5a6; }
+
+.event-title {
+  font-size: 1.1rem;
+  margin-bottom: 0.5rem;
+}
+
+.event-desc {
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+  margin-bottom: 1rem;
+  line-height: 1.5;
+  flex-grow: 1;
+}
+
+.event-details {
+  margin-top: auto;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border-grey);
+}
+.event-meta {
+  color: var(--text-secondary);
+  font-size: 0.8rem;
+  margin-bottom: 0.4rem;
+  display: flex;
+  justify-content: space-between;
+}
+.event-meta strong {
+  color: var(--text-primary);
+}
+
+/* History Data Table */
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 1rem;
+  background: var(--glass-bg);
+  backdrop-filter: blur(10px);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.data-table th, .data-table td {
+  padding: 1rem;
+  text-align: left;
+  border-bottom: 1px solid var(--border-grey);
+}
+
+.data-table th {
+  font-family: 'Syncopate', sans-serif;
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  background: var(--secondary-bg);
+}
+
+.data-table tbody tr {
+    transition: background 0.3s;
+}
+.data-table tbody tr:hover {
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+/* Strict Flatpickr Red & Black Overrides */
+.flatpickr-calendar.dark {
+    background: #000 !important;
+    border: 1px solid #222 !important;
+    box-shadow: 0 8px 32px 0 rgba(0,0,0,0.8) !important;
+}
+.flatpickr-calendar.dark .flatpickr-months .flatpickr-month {
+    color: #fff !important;
+    fill: #fff !important;
+}
+.flatpickr-calendar.dark .flatpickr-current-month .flatpickr-monthDropdown-months {
+    background: #000 !important;
+    color: #fff !important;
+    border: 1px solid #222;
+    padding: 2px;
+}
+.flatpickr-calendar.dark .flatpickr-current-month .flatpickr-monthDropdown-months .flatpickr-monthDropdown-month {
+    background-color: #000 !important;
+    color: #fff !important;
+}
+
+/* Fix dropdown selections specifically when interacting in flatpickr */
+select.flatpickr-monthDropdown-months option {
+    background: #000 !important;
+    color: #fff !important;
+}
+select.flatpickr-monthDropdown-months option:hover,
+select.flatpickr-monthDropdown-months option:focus,
+select.flatpickr-monthDropdown-months option:active,
+select.flatpickr-monthDropdown-months option:checked {
+    background-color: #e50914 !important;
+    color: #fff !important;
+}
+
+.flatpickr-day.selected, .flatpickr-day.startRange, .flatpickr-day.endRange,
+.flatpickr-day.selected.inRange, .flatpickr-day.startRange.inRange, .flatpickr-day.endRange.inRange,
+.flatpickr-day.selected:focus, .flatpickr-day.startRange:focus, .flatpickr-day.endRange:focus,
+.flatpickr-day.selected:hover, .flatpickr-day.startRange:hover, .flatpickr-day.endRange:hover,
+.flatpickr-day.selected.prevMonthDay, .flatpickr-day.startRange.prevMonthDay, .flatpickr-day.endRange.prevMonthDay,
+.flatpickr-day.selected.nextMonthDay, .flatpickr-day.startRange.nextMonthDay, .flatpickr-day.endRange.nextMonthDay {
+    background: #e50914 !important;
+    border-color: #e50914 !important;
+}
