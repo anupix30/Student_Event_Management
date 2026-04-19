@@ -1,5 +1,5 @@
 /* Deep Cinematic Dark Mode - Netflix Aesthetic */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Syncopate:wght@400;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Syncopate:wght@400;700&family=Rajdhani:wght@400;500;600;700&family=Orbitron:wght@400;500;700&display=swap');
 
 :root {
   --primary-bg: #000000;
@@ -19,7 +19,7 @@
 }
 
 html {
-  font-size: 14px; /* Reduced overall sizing per user request */
+  font-size: 14px;
 }
 
 body {
@@ -45,7 +45,7 @@ h1, h2, h3, h4, h5, h6 {
   width: 100%;
 }
 
-/* Sidebar Layout Systems */
+/* Sidebar Layout */
 .layout-wrapper {
   display: flex;
   flex: 1;
@@ -53,13 +53,13 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .sidebar {
-  width: 250px;
+  width: 220px;
   background: var(--secondary-bg);
   border-right: 1px solid var(--border-grey);
   padding: 2rem 1rem;
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: 0.6rem;
 }
 
 .sidebar-btn {
@@ -67,9 +67,12 @@ h1, h2, h3, h4, h5, h6 {
   color: var(--text-secondary);
   border: 1px solid transparent;
   text-align: left;
-  padding: 1rem;
-  font-family: 'Syncopate', sans-serif;
-  font-size: 0.85rem;
+  padding: 0.85rem 1rem;
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 1rem;
+  font-weight: 600;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
   border-radius: 6px;
   cursor: pointer;
   transition: all 0.3s;
@@ -78,11 +81,13 @@ h1, h2, h3, h4, h5, h6 {
 .sidebar-btn:hover {
   background: rgba(229, 9, 20, 0.1);
   color: var(--accent-red);
+  border-color: rgba(229, 9, 20, 0.3);
 }
 
 .sidebar-btn.active {
   background: var(--accent-red);
   color: white;
+  border-color: var(--accent-red);
 }
 
 .main-content {
@@ -143,15 +148,16 @@ input:focus, select:focus, textarea:focus {
   box-shadow: 0 0 8px rgba(229, 9, 20, 0.3);
 }
 
-/* Red Hover Glow Buttons */
+/* Buttons */
 .btn-primary {
   background-color: var(--accent-red);
   color: white;
   border: none;
   padding: 0.7rem 1.2rem;
-  font-family: 'Syncopate', sans-serif;
-  font-size: 0.85rem;
-  font-weight: bold;
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: 1.5px;
   border-radius: 6px;
   cursor: pointer;
   transition: all 0.3s ease;
@@ -163,6 +169,27 @@ input:focus, select:focus, textarea:focus {
   background-color: var(--accent-hover);
   box-shadow: 0 0 15px var(--accent-red);
   transform: translateY(-2px);
+}
+
+.btn-secondary {
+  background-color: transparent;
+  color: var(--text-secondary);
+  border: 1px solid var(--border-grey);
+  padding: 0.7rem 1.2rem;
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  width: 100%;
+  text-transform: uppercase;
+}
+
+.btn-secondary:hover {
+  border-color: var(--text-secondary);
+  color: var(--text-primary);
 }
 
 /* Header */
@@ -191,20 +218,36 @@ header {
 .user-info {
   display: flex;
   align-items: center;
-  gap: 1rem;
+  gap: 1.2rem;
+}
+
+.user-info-name {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 0.78rem;
+  font-weight: 500;
+  color: var(--text-primary);
+  letter-spacing: 1px;
 }
 
 .logout-btn {
-  background: none;
-  border: none;
-  color: var(--text-secondary);
+  background: rgba(229, 9, 20, 0.15);
+  border: 1.5px solid var(--accent-red);
+  color: #ff4d4d;
   cursor: pointer;
-  font-family: 'Inter', sans-serif;
-  transition: color 0.3s;
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 0.95rem;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  padding: 0.4rem 1rem;
+  border-radius: 6px;
+  transition: all 0.3s ease;
 }
 
 .logout-btn:hover {
-  color: var(--accent-red);
+  background: var(--accent-red);
+  color: #ffffff;
+  box-shadow: 0 0 12px rgba(229, 9, 20, 0.6);
 }
 
 /* Utilities */
@@ -213,7 +256,7 @@ header {
 .mb-2 { margin-bottom: 1.5rem; }
 .hidden { display: none !important; }
 
-/* Grid for events */
+/* Events Grid */
 .events-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
@@ -265,6 +308,7 @@ header {
   padding-top: 1rem;
   border-top: 1px solid var(--border-grey);
 }
+
 .event-meta {
   color: var(--text-secondary);
   font-size: 0.8rem;
@@ -272,8 +316,60 @@ header {
   display: flex;
   justify-content: space-between;
 }
+
 .event-meta strong {
   color: var(--text-primary);
+}
+
+/* Register / Unregister Buttons */
+.btn-register {
+  margin-top: 1rem;
+  width: 100%;
+  padding: 0.7rem 1.2rem;
+  background: rgba(229, 9, 20, 0.15);
+  border: 1.5px solid var(--accent-red);
+  color: #ff4d4d;
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  border-radius: 8px;
+  cursor: pointer;
+  backdrop-filter: blur(6px);
+  transition: all 0.3s ease;
+}
+
+.btn-register:hover {
+  background: var(--accent-red);
+  color: #fff;
+  box-shadow: 0 0 18px rgba(229, 9, 20, 0.5);
+  transform: translateY(-2px);
+}
+
+.btn-unregister {
+  margin-top: 1rem;
+  width: 100%;
+  padding: 0.7rem 1.2rem;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1.5px solid #444;
+  color: #aaa;
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  border-radius: 8px;
+  cursor: pointer;
+  backdrop-filter: blur(6px);
+  transition: all 0.3s ease;
+}
+
+.btn-unregister:hover {
+  background: rgba(255,255,255,0.1);
+  border-color: #888;
+  color: #fff;
+  transform: translateY(-2px);
 }
 
 /* History Data Table */
@@ -294,21 +390,107 @@ header {
 }
 
 .data-table th {
-  font-family: 'Syncopate', sans-serif;
-  font-size: 0.8rem;
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 0.9rem;
+  font-weight: 700;
+  letter-spacing: 1.5px;
   color: var(--text-secondary);
   text-transform: uppercase;
   background: var(--secondary-bg);
 }
 
 .data-table tbody tr {
-    transition: background 0.3s;
+  transition: background 0.3s;
 }
+
 .data-table tbody tr:hover {
   background-color: rgba(255, 255, 255, 0.05);
 }
 
-/* Strict Flatpickr Red & Black Overrides */
+/* Toast Notifications */
+#toast-container {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+  z-index: 9999;
+  pointer-events: none;
+}
+
+.toast {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  background: rgba(10, 10, 10, 0.85);
+  border: 1px solid #1db954;
+  border-left: 4px solid #1db954;
+  border-radius: 10px;
+  padding: 0.9rem 1.3rem;
+  min-width: 280px;
+  max-width: 360px;
+  backdrop-filter: blur(16px);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.6), 0 0 16px rgba(29, 185, 84, 0.15);
+  animation: toastSlideIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  pointer-events: all;
+}
+
+.toast.hiding {
+  animation: toastSlideOut 0.4s ease forwards;
+}
+
+.toast-icon {
+  font-size: 1.3rem;
+  flex-shrink: 0;
+}
+
+.toast-body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.toast-title {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #1db954;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+.toast-message {
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: #e0e0e0;
+  letter-spacing: 0.5px;
+}
+
+@keyframes toastSlideIn {
+  from {
+    opacity: 0;
+    transform: translateX(60px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
+}
+
+@keyframes toastSlideOut {
+  from {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: translateX(60px) scale(0.95);
+  }
+}
+
+/* Flatpickr Overrides */
 .flatpickr-calendar.dark {
     background: #000 !important;
     border: 1px solid #222 !important;
@@ -328,26 +510,17 @@ header {
     background-color: #000 !important;
     color: #fff !important;
 }
-
-/* Fix dropdown selections specifically when interacting in flatpickr */
 select.flatpickr-monthDropdown-months option {
     background: #000 !important;
     color: #fff !important;
 }
-select.flatpickr-monthDropdown-months option:hover,
-select.flatpickr-monthDropdown-months option:focus,
-select.flatpickr-monthDropdown-months option:active,
 select.flatpickr-monthDropdown-months option:checked {
     background-color: #e50914 !important;
     color: #fff !important;
 }
-
 .flatpickr-day.selected, .flatpickr-day.startRange, .flatpickr-day.endRange,
-.flatpickr-day.selected.inRange, .flatpickr-day.startRange.inRange, .flatpickr-day.endRange.inRange,
 .flatpickr-day.selected:focus, .flatpickr-day.startRange:focus, .flatpickr-day.endRange:focus,
-.flatpickr-day.selected:hover, .flatpickr-day.startRange:hover, .flatpickr-day.endRange:hover,
-.flatpickr-day.selected.prevMonthDay, .flatpickr-day.startRange.prevMonthDay, .flatpickr-day.endRange.prevMonthDay,
-.flatpickr-day.selected.nextMonthDay, .flatpickr-day.startRange.nextMonthDay, .flatpickr-day.endRange.nextMonthDay {
+.flatpickr-day.selected:hover, .flatpickr-day.startRange:hover, .flatpickr-day.endRange:hover {
     background: #e50914 !important;
     border-color: #e50914 !important;
 }
