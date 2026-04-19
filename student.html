@@ -10,19 +10,18 @@
     <header>
         <div class="logo">MAHE<span>HUB</span></div>
         <div class="user-info">
-            <span id="user-info-name" style="color: var(--text-secondary); font-family: 'Inter', sans-serif;"></span>
+            <span id="user-info-name" class="user-info-name"></span>
             <button class="logout-btn" onclick="logout()">Logout</button>
         </div>
     </header>
 
     <div class="layout-wrapper">
         <aside class="sidebar">
-            <button class="sidebar-btn active" onclick="switchTab('registering')">1. Registering</button>
-            <button class="sidebar-btn" onclick="switchTab('history')">2. History</button>
+            <button class="sidebar-btn active" onclick="switchTab('registering')">Live Events</button>
+            <button class="sidebar-btn" onclick="switchTab('history')">My Registrations</button>
         </aside>
 
         <main class="main-content">
-            <!-- Registering Tab -->
             <section id="tab-registering" class="tab-section active">
                 <h2 class="mb-2">Live Event Feed</h2>
                 <div id="live-events" class="events-grid">
@@ -30,7 +29,6 @@
                 </div>
             </section>
 
-            <!-- History Tab -->
             <section id="tab-history" class="tab-section">
                 <h2 class="mb-2">My Registered Events</h2>
                 <table class="data-table">
@@ -55,62 +53,22 @@
 
     <script src="app.js"></script>
     <script>
+        // Track which events the student has already registered for
+        let registeredEventIds = new Set();
+
         document.addEventListener('DOMContentLoaded', () => {
             checkAuth('student');
-            
-            // Fetch personal history on direct load
+
             sendAction('fetch_history', { user_id: currentUser.id, role: currentUser.role });
-            
-            document.addEventListener('mahehub_sync', (e) => {
-                const data = e.detail;
-                const container = document.getElementById('live-events');
-                
-                container.innerHTML = '';
-                let foundApproved = false;
-                
-                if (data.events) {
-                    data.events.forEach(evt => {
-                        if (evt.status === 'approve') {
-                            foundApproved = true;
-                            container.innerHTML += `
-                                <div class="glass-card event-card">
-                                    <div class="event-header">
-                                        <span class="event-status status-approve">APPROVED</span>
-                                    </div>
-                                    <h3 class="event-title">${evt.title}</h3>
-                                    <p class="event-desc">${evt.description}</p>
-                                    <div class="event-details">
-                                        <div class="event-meta">
-                                            <span>Date: <strong>${evt.date}</strong></span>
-                                            <span>Time: <strong>${evt.time}</strong></span>
-                                        </div>
-                                        <div class="event-meta">
-                                            <span>Organiser: <strong>${evt.organiser_name}</strong></span>
-                                            <span>Going: <strong>${evt.registration_count}</strong></span>
-                                        </div>
-                                        <button class="btn-primary mt-2" onclick="registerForEvent(${evt.id})">Register</button>
-                                    </div>
-                                </div>
-                            `;
-                        }
-                    });
-                }
-                
-                if (!foundApproved) {
-                    container.innerHTML = '<p style="color: var(--text-secondary);">No active events available at the moment.</p>';
-                }
-                
-                // Fetch our history again since the sync might contain a new event we registered for
-                sendAction('fetch_history', { user_id: currentUser.id, role: currentUser.role });
-            });
-            
+
             document.addEventListener('mahehub_response_fetch_history', (e) => {
                 const data = e.detail;
                 if (!data.success) return;
-                
+                registeredEventIds = new Set(data.history.map(evt => evt.id));
+
                 const tbody = document.getElementById('history-table-body');
                 tbody.innerHTML = '';
-                
+
                 if (data.history && data.history.length > 0) {
                     data.history.forEach(evt => {
                         tbody.innerHTML += `
@@ -126,28 +84,80 @@
                 } else {
                     tbody.innerHTML = `<tr><td colspan="5" style="text-align: center; color: var(--text-secondary);">You have not registered for any events yet.</td></tr>`;
                 }
+
+                // Re-render live events to update button states
+                renderLiveEvents(lastSyncData);
             });
-            
+
             document.addEventListener('mahehub_response_register_event', (e) => {
                 const data = e.detail;
                 if (data.success) {
-                    alert('Successfully registered for the event!');
-                    // Ask server to fetch history directly again to populate the table aggressively
+                    showToast('Registered!', 'You have successfully joined the event.', '🎉');
                     sendAction('fetch_history', { user_id: currentUser.id, role: currentUser.role });
-                    switchTab('history');
                 } else {
-                    alert('Could not register: ' + (data.message || 'Already registered.'));
+                    showToast('Error', data.message || 'Could not register for event.', '✗');
                 }
             });
+
+            document.addEventListener('mahehub_sync', (e) => {
+                lastSyncData = e.detail;
+                renderLiveEvents(lastSyncData);
+                sendAction('fetch_history', { user_id: currentUser.id, role: currentUser.role });
+            });
         });
-        
+
+        let lastSyncData = null;
+
+        function renderLiveEvents(data) {
+            if (!data) return;
+            const container = document.getElementById('live-events');
+            container.innerHTML = '';
+            let foundApproved = false;
+
+            if (data.events) {
+                data.events.forEach(evt => {
+                    if (evt.status === 'approve') {
+                        foundApproved = true;
+                        const isRegistered = registeredEventIds.has(evt.id);
+                        container.innerHTML += `
+                            <div class="glass-card event-card">
+                                <div class="event-header">
+                                    <span class="event-status status-approve">APPROVED</span>
+                                </div>
+                                <h3 class="event-title">${evt.title}</h3>
+                                <p class="event-desc">${evt.description}</p>
+                                <div class="event-details">
+                                    <div class="event-meta">
+                                        <span>Date: <strong>${evt.date}</strong></span>
+                                        <span>Time: <strong>${evt.time}</strong></span>
+                                    </div>
+                                    <div class="event-meta">
+                                        <span>Organiser: <strong>${evt.organiser_name}</strong></span>
+                                        <span>Going: <strong>${evt.registration_count}</strong></span>
+                                    </div>
+                                    ${isRegistered
+                                        ? `<button class="btn-unregister" disabled>Registered ✓</button>`
+                                        : `<button class="btn-register" onclick="registerForEvent(${evt.id})">Register</button>`
+                                    }
+                                </div>
+                            </div>
+                        `;
+                    }
+                });
+            }
+
+            if (!foundApproved) {
+                container.innerHTML = '<p style="color: var(--text-secondary);">No active events available at the moment.</p>';
+            }
+        }
+
         function registerForEvent(eventId) {
             sendAction('register_event', {
                 student_id: currentUser.id,
                 event_id: eventId
             });
         }
-        
+
         function switchTab(tabId) {
             document.querySelectorAll('.tab-section').forEach(el => el.classList.remove('active'));
             document.querySelectorAll('.sidebar-btn').forEach(el => el.classList.remove('active'));
