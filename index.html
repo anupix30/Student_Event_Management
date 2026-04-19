@@ -12,174 +12,138 @@
             <h1 class="logo">MAHE<span>HUB</span></h1>
             <p style="color: var(--text-secondary); margin-top: 0.5rem;">Student Event Management</p>
         </div>
-
         <div class="glass-card" id="login-section">
             <h2 class="mb-2 text-center">Login</h2>
-            <form id="login-form">
-                <div class="form-group">
-                    <label for="login-email">Email</label>
-                    <input type="email" id="login-email" required>
-                </div>
-                <div class="form-group">
-                    <label for="login-password">Password</label>
-                    <input type="password" id="login-password" required>
-                </div>
-                <button type="submit" class="btn-primary">Sign In</button>
-                <div class="text-center mt-2">
-                    <p style="color: var(--text-secondary); font-size: 0.9rem;">
-                        New User? <a href="#" id="show-register" style="color: var(--accent-red); text-decoration: none;">Register Here</a>
-                    </p>
-                </div>
-            </form>
+            <div class="form-group">
+                <label for="login-email">Email</label>
+                <input type="email" id="login-email" required>
+            </div>
+            <div class="form-group">
+                <label for="login-password">Password</label>
+                <input type="password" id="login-password" required>
+            </div>
+            <button class="btn-primary" onclick="handleLogin()">Sign In</button>
+            <div class="text-center mt-2">
+                <p style="color: var(--text-secondary); font-size: 0.9rem;">
+                    New Student? <a href="#" id="show-register" style="color: var(--accent-red); text-decoration: none;">Register Here</a>
+                </p>
+            </div>
         </div>
 
         <div class="glass-card hidden" id="register-section">
-            <h2 class="mb-2 text-center">Register</h2>
-            <form id="register-form">
-                <div class="form-group">
-                    <label for="reg-name">Full Name</label>
-                    <input type="text" id="reg-name" required>
-                </div>
-                <div class="form-group">
-                    <label for="reg-email">Email</label>
-                    <input type="email" id="reg-email" required>
-                </div>
-                <div class="form-group">
-                    <label for="reg-password">Password</label>
-                    <input type="password" id="reg-password" required>
-                </div>
-                <div class="form-group">
-                    <label for="reg-role">Role</label>
-                    <select id="reg-role" required>
-                        <option value="student">Student</option>
-                        <option value="organizer">Organizer</option>
-                        <option value="admin">Admin</option>
-                    </select>
-                </div>
-                
-                <!-- Dynamic Fields -->
-                <div id="student-fields">
-                    <div class="form-group">
-                        <label for="reg-dept">Department</label>
-                        <input type="text" id="reg-dept">
-                    </div>
-                    <div class="form-group">
-                        <label for="reg-regno">Registration Number</label>
-                        <input type="text" id="reg-regno">
-                    </div>
-                    <div class="form-group">
-                        <label for="reg-year">Year</label>
-                        <select id="reg-year">
-                            <option value="">Select Year</option>
-                            <option value="1">1st Year</option>
-                            <option value="2">2nd Year</option>
-                            <option value="3">3rd Year</option>
-                            <option value="4">4th Year</option>
-                        </select>
-                    </div>
-                </div>
-
-                <button type="submit" class="btn-primary">Create Account</button>
-                <div class="text-center mt-2">
-                    <p style="color: var(--text-secondary); font-size: 0.9rem;">
-                        Already have an account? <a href="#" id="show-login" style="color: var(--accent-red); text-decoration: none;">Sign In</a>
-                    </p>
-                </div>
-            </form>
+            <h2 class="mb-2 text-center">Student Registration</h2>
+            <div class="form-group">
+                <label for="reg-name">Full Name</label>
+                <input type="text" id="reg-name" required>
+            </div>
+            <div class="form-group">
+                <label for="reg-email">Email</label>
+                <input type="email" id="reg-email" required>
+            </div>
+            <div class="form-group">
+                <label for="reg-password">Password</label>
+                <input type="password" id="reg-password" required>
+            </div>
+            <div class="form-group">
+                <label for="reg-regno">Registration Number</label>
+                <input type="text" id="reg-regno" required>
+            </div>
+            <div class="form-group">
+                <label for="reg-dept">Department</label>
+                <input type="text" id="reg-dept" required>
+            </div>
+            <div class="form-group">
+                <label for="reg-year">Year</label>
+                <select id="reg-year" required>
+                    <option value="">Select Year</option>
+                    <option value="1">1st Year</option>
+                    <option value="2">2nd Year</option>
+                    <option value="3">3rd Year</option>
+                    <option value="4">4th Year</option>
+                </select>
+            </div>
+            <button class="btn-primary" onclick="handleRegister()">Create Account</button>
+            <div class="text-center mt-2">
+                <p style="color: var(--text-secondary); font-size: 0.9rem;">
+                    Already have an account? <a href="#" id="show-login" style="color: var(--accent-red); text-decoration: none;">Sign In</a>
+                </p>
+            </div>
         </div>
     </div>
 
     <script src="app.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            checkAuth(); // Redirect if already logged in
-            
-            const loginSection = document.getElementById('login-section');
-            const registerSection = document.getElementById('register-section');
-            const studentFields = document.getElementById('student-fields');
-            const roleSelect = document.getElementById('reg-role');
+            checkAuth();
 
             document.getElementById('show-register').addEventListener('click', (e) => {
                 e.preventDefault();
-                loginSection.classList.add('hidden');
-                registerSection.classList.remove('hidden');
+                document.getElementById('login-section').classList.add('hidden');
+                document.getElementById('register-section').classList.remove('hidden');
             });
 
             document.getElementById('show-login').addEventListener('click', (e) => {
                 e.preventDefault();
-                registerSection.classList.add('hidden');
-                loginSection.classList.remove('hidden');
+                document.getElementById('register-section').classList.add('hidden');
+                document.getElementById('login-section').classList.remove('hidden');
             });
 
-            roleSelect.addEventListener('change', (e) => {
-                if (e.target.value === 'student') {
-                    studentFields.classList.remove('hidden');
-                } else {
-                    studentFields.classList.add('hidden');
-                    // Clear fields
-                    document.getElementById('reg-dept').value = '';
-                    document.getElementById('reg-regno').value = '';
-                    document.getElementById('reg-year').value = '';
-                }
-            });
-
-            document.getElementById('login-form').addEventListener('submit', (e) => {
-                e.preventDefault();
-                const email = document.getElementById('login-email').value;
-                const password = document.getElementById('login-password').value;
-                sendAction('login', { email, password });
-            });
-
-            document.getElementById('register-form').addEventListener('submit', (e) => {
-                e.preventDefault();
-                const name = document.getElementById('reg-name').value;
-                const email = document.getElementById('reg-email').value;
-                const password = document.getElementById('reg-password').value;
-                const role = document.getElementById('reg-role').value;
-                
-                let data = { name, email, password, role };
-                if (role === 'student') {
-                    data.dept = document.getElementById('reg-dept').value;
-                    data.reg_no = document.getElementById('reg-regno').value;
-                    data.year = document.getElementById('reg-year').value;
-                }
-                
-                sendAction('register', data);
-            });
-
-            // Handle Responses
             document.addEventListener('mahehub_response_login', (e) => {
                 const data = e.detail;
                 if (data.success) {
+                    let role = data.role;
+                    if (role === 'organiser') role = 'organiser';
                     localStorage.setItem('mahehub_user', JSON.stringify({
                         id: data.user_id,
                         name: data.name,
-                        role: data.role
+                        role: role
                     }));
-                    window.location.reload(); // Will hit checkAuth() and redirect
+                    window.location.reload();
                 } else {
-                    alert(data.message || 'Login failed');
+                    alert(data.message || 'Login failed. Please check your credentials.');
                 }
             });
 
             document.addEventListener('mahehub_response_register', (e) => {
                 const data = e.detail;
                 if (data.success) {
-                    // Update role spelling before saving just in case
-                    let role = data.role;
-                    if(role === 'organiser') role = 'organizer';
-                    
                     localStorage.setItem('mahehub_user', JSON.stringify({
                         id: data.user_id,
                         name: data.name,
-                        role: role
+                        role: 'student'
                     }));
-                    window.location.reload(); // Will hit checkAuth() and redirect
+                    window.location.reload();
                 } else {
-                    alert(data.message || 'Registration failed');
+                    alert(data.message || 'Registration failed. Email might already exist.');
                 }
             });
         });
+
+        function handleLogin() {
+            const email = document.getElementById('login-email').value.trim();
+            const password = document.getElementById('login-password').value.trim();
+            if (!email || !password) {
+                alert('Please enter both email and password.');
+                return;
+            }
+            sendAction('login', { email, password });
+        }
+
+        function handleRegister() {
+            const name = document.getElementById('reg-name').value.trim();
+            const email = document.getElementById('reg-email').value.trim();
+            const password = document.getElementById('reg-password').value.trim();
+            const reg_no = document.getElementById('reg-regno').value.trim();
+            const dept = document.getElementById('reg-dept').value.trim();
+            const year = document.getElementById('reg-year').value;
+
+            if (!name || !email || !password || !reg_no || !dept || !year) {
+                alert('All fields are required for student registration.');
+                return;
+            }
+
+            sendAction('register', { name, email, password, role: 'student', reg_no, dept, year });
+        }
     </script>
 </body>
 </html>
