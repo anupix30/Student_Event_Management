@@ -1,7 +1,7 @@
 CREATE DATABASE IF NOT EXISTS mahehub;
 USE mahehub;
 
-CREATE TABLE IF NOT EXISTS users (
+CREATE TABLE users (
     id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
     email VARCHAR(255) UNIQUE NOT NULL,
@@ -12,18 +12,28 @@ CREATE TABLE IF NOT EXISTS users (
     year INT
 );
 
-CREATE TABLE IF NOT EXISTS events (
+-- Default admin account (hardcoded)
+INSERT INTO users (name, email, password, role)
+VALUES ('Administrator', 'admin@mahehub.com', 'admin123', 'admin');
+
+-- Default organiser accounts (hardcoded)
+INSERT INTO users (name, email, password, role)
+VALUES 
+    ('Organiser One', 'organiser1@mahehub.com', 'org123', 'organiser'),
+    ('Organiser Two', 'organiser2@mahehub.com', 'org456', 'organiser');
+
+CREATE TABLE events (
     id INT AUTO_INCREMENT PRIMARY KEY,
     title VARCHAR(255) NOT NULL,
     description TEXT,
-    date DATE NOT NULL,
-    time TIME NOT NULL,
+    date DATE,
+    time TIME,
     status ENUM('draft', 'pending', 'approve', 'reject') DEFAULT 'pending',
     organiser_id INT,
     FOREIGN KEY (organiser_id) REFERENCES users(id)
 );
 
-CREATE TABLE IF NOT EXISTS registrations (
+CREATE TABLE registrations (
     id INT AUTO_INCREMENT PRIMARY KEY,
     student_id INT,
     event_id INT,
