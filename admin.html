@@ -10,20 +10,19 @@
     <header>
         <div class="logo">MAHE<span>HUB</span></div>
         <div class="user-info">
-            <span id="user-info-name" style="color: var(--text-secondary); font-family: 'Inter', sans-serif;"></span>
+            <span id="user-info-name" class="user-info-name"></span>
             <button class="logout-btn" onclick="logout()">Logout</button>
         </div>
     </header>
 
     <div class="layout-wrapper">
         <aside class="sidebar">
-            <button class="sidebar-btn active" onclick="switchTab('dashboard')">1. Dashboard</button>
-            <button class="sidebar-btn" onclick="switchTab('pending')">2. Pending Events</button>
-            <button class="sidebar-btn" onclick="switchTab('history')">3. History</button>
+            <button class="sidebar-btn active" onclick="switchTab('dashboard')">Dashboard</button>
+            <button class="sidebar-btn" onclick="switchTab('pending')">Pending Events</button>
+            <button class="sidebar-btn" onclick="switchTab('history')">History</button>
         </aside>
 
         <main class="main-content">
-            <!-- Dashboard Tab -->
             <section id="tab-dashboard" class="tab-section active">
                 <h2 class="mb-2">System Overview</h2>
                 <div class="glass-card mb-2" style="display: flex; gap: 2rem; justify-content: space-around;">
@@ -46,7 +45,6 @@
                 </div>
             </section>
 
-            <!-- Pending Tab -->
             <section id="tab-pending" class="tab-section">
                 <h3 class="mb-2">Pending Events</h3>
                 <div id="pending-events" class="events-grid">
@@ -54,7 +52,6 @@
                 </div>
             </section>
 
-            <!-- History Tab -->
             <section id="tab-history" class="tab-section">
                 <h3 class="mb-2">Evaluated History</h3>
                 <div id="all-events" class="events-grid">
@@ -68,26 +65,24 @@
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             checkAuth('admin');
-            
+
             document.addEventListener('mahehub_sync', (e) => {
                 const data = e.detail;
-                
-                // Update stats
+
                 document.getElementById('stat-pending').textContent = data.stats['pending'] || 0;
                 document.getElementById('stat-approve').textContent = data.stats['approve'] || 0;
                 document.getElementById('stat-reject').textContent = data.stats['reject'] || 0;
                 document.getElementById('stat-draft').textContent = data.stats['draft'] || 0;
-                
-                // Render Events
+
                 const pendingContainer = document.getElementById('pending-events');
                 const allContainer = document.getElementById('all-events');
-                
+
                 pendingContainer.innerHTML = '';
                 allContainer.innerHTML = '';
-                
+
                 let hasPending = false;
                 let hasHistory = false;
-                
+
                 if (data.events) {
                     data.events.forEach(evt => {
                         const cardHtml = `
@@ -115,7 +110,7 @@
                                 </div>
                             </div>
                         `;
-                        
+
                         if (evt.status === 'pending') {
                             pendingContainer.innerHTML += cardHtml;
                             hasPending = true;
@@ -125,13 +120,17 @@
                         }
                     });
                 }
-                
+
                 if (!hasPending) pendingContainer.innerHTML = '<p style="color: var(--text-secondary);">No pending events.</p>';
                 if (!hasHistory) allContainer.innerHTML = '<p style="color: var(--text-secondary);">No evaluated events yet.</p>';
             });
-            
+
             document.addEventListener('mahehub_response_update_event_status', (e) => {
-                if (!e.detail.success) alert('Failed to update event status: ' + (e.detail.message || 'Unknown error'));
+                if (e.detail.success) {
+                    showToast('Updated', 'Event status has been updated.', '✦');
+                } else {
+                    showToast('Error', e.detail.message || 'Failed to update status.', '✗');
+                }
             });
         });
 
