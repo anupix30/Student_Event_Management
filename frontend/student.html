@@ -187,7 +187,7 @@
             window.location.href = "index.html";
         }
 
-        const socket = new WebSocket('ws://localhost:3000');
+        const socket = new WebSocket('wss://mahehub-backend.onrender.com');
         const grid = document.getElementById('grid');
         const userSession = JSON.parse(localStorage.getItem('currentUser')) || { email: 'guest' };
         const regKey = `events_${userSession.email}`;

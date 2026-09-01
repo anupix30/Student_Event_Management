@@ -285,7 +285,7 @@
 
     <script>
         lucide.createIcons();
-        const socket = new WebSocket('ws://localhost:3000');
+        const socket = new WebSocket('wss://mahehub-backend.onrender.com');
         let myEvents = [];
 
         socket.onopen = () => socket.send(JSON.stringify({ type: 'REGISTER', role: 'organizer' }));

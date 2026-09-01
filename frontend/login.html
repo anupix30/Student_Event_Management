@@ -272,7 +272,7 @@
   window.addEventListener('resize', init); init(); loop();
 
   // --- WEBSOCKET AUTH LOGIC ---
-  const socket = new WebSocket('ws://localhost:3000');
+  const socket = new WebSocket('wss://mahehub-backend.onrender.com');
 
   socket.onmessage = (event) => {
     const data = JSON.parse(event.data);
