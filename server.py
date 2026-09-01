@@ -207,12 +207,43 @@ async def handle_connection(websocket):
         if websocket in CLIENTS:
             del CLIENTS[websocket]
 
+def reset_test_data():
+    conn = sqlite3.connect(DB_PATH)
+    cursor = conn.cursor()
+
+    cursor.execute("DELETE FROM registrations")
+    cursor.execute("DELETE FROM events")
+    cursor.execute("DELETE FROM users WHERE role = 'student'")
+
+    conn.commit()
+    conn.close()
+
+    print("TEST DATA RESET COMPLETE")
+
+
+def reset_test_data():
+    if os.environ.get("RESET_DATABASE") == "true":
+        conn = sqlite3.connect(DB_PATH)
+        cursor = conn.cursor()
+
+        cursor.execute("DELETE FROM registrations")
+        cursor.execute("DELETE FROM events")
+        cursor.execute("DELETE FROM users WHERE role = 'student'")
+
+        conn.commit()
+        conn.close()
+
+        print("TEST DATA RESET COMPLETE")
+
+
 async def main():
     init_db()
+    reset_test_data()
+
     host = os.environ.get("HOST", "0.0.0.0")
     port = int(os.environ.get("PORT", 3000))
     async with websockets.serve(handle_connection, host, port):
-        print(f"🚀 Campus Control Server Online: ws://{host}:{port}")
+        print(f"Campus Control Server Online: ws://{host}:{port}")
         await asyncio.Future()
 
 if __name__ == "__main__":
