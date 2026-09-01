@@ -84,7 +84,7 @@ This allows the server to:
 
 ```text
                     ┌─────────────────────────┐
-                    │      MAHEHub Users       │
+                    │      MAHEHub Users      │
                     │                         │
                     │  Student / Organizer /  │
                     │       Admin             │
@@ -199,7 +199,7 @@ ws://localhost:3000
 For the deployed application:
 
 ```text
-wss://mahehub-backend.onrender.com
+https://mahehub.onrender.com
 ```
 
 ---
@@ -460,7 +460,7 @@ python server.py
 ### Production Endpoint
 
 ```text
-wss://mahehub-backend.onrender.com
+https://mahehub.onrender.com
 ```
 
 The production deployment uses a secure WebSocket connection (`wss://`) for communication between clients and the hosted backend.
