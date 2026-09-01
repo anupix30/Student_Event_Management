@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Organizer Panel | Campus Control</title>
+    <link href="https://fonts.googleapis.com/css2?family=Syncopate:wght@700&family=Inter:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        :root {
+            --netflix-red: #e50914;
+            --netflix-red-glow: rgba(229, 9, 20, 0.6);
+            --bg-dark: #000000;
+            --panel-dark: #0a0a0a;
+            --sidebar-collapsed: 80px;
+            --sidebar-expanded: 260px;
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --transition: 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        body { 
+            background: var(--bg-dark); 
+            color: white; 
+            font-family: 'Inter', sans-serif; 
+            margin: 0; 
+            display: flex;
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+
+        /* --- SIDEBAR --- */
+        .sidebar {
+            width: var(--sidebar-collapsed);
+            background: rgba(0, 0, 0, 0.95);
+            height: 100vh;
+            position: fixed;
+            left: 0;
+            top: 0;
+            border-right: 1px solid var(--glass-border);
+            z-index: 1000;
+            transition: var(--transition);
+            display: flex;
+            flex-direction: column;
+            padding-top: 20px;
+            overflow: hidden;
+        }
+
+        .sidebar:hover {
+            width: var(--sidebar-expanded);
+            background: rgba(10, 10, 10, 0.98);
+        }
+
+        .brand {
+            padding: 25px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            color: var(--netflix-red);
+            font-family: 'Syncopate', sans-serif;
+            font-size: 0.9rem;
+            letter-spacing: 2px;
+            margin-bottom: 20px;
+        }
+
+        .menu-list { flex-grow: 1; }
+
+        .menu-item {
+            padding: 15px 25px;
+            margin-bottom: 10px;
+            color: #666;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            transition: 0.3s;
+            position: relative;
+            white-space: nowrap;
+        }
+
+        .menu-item.active::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 15%;
+            height: 70%;
+            width: 4px;
+            background: var(--netflix-red);
+            box-shadow: 0 0 15px var(--netflix-red);
+            border-radius: 0 4px 4px 0;
+        }
+
+        .menu-item:hover, .menu-item.active {
+            color: white;
+            background: linear-gradient(90deg, rgba(229, 9, 20, 0.1) 0%, transparent 100%);
+        }
+
+        .icon-box {
+            min-width: 32px;
+            height: 32px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 8px;
+            transition: 0.3s;
+        }
+
+        .gradient-cyan { background: linear-gradient(135deg, #00f2ff, #a336ff); color: white; }
+        .plus-gradient { background: linear-gradient(135deg, #ff3e4e, #a336ff); color: white; }
+        .orange-gradient { background: linear-gradient(135deg, #ff9f0a, #ff3e4e); color: white; }
+
+        .menu-text {
+            opacity: 0;
+            font-weight: 700;
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            letter-spacing: 1px;
+            transform: translateX(-10px);
+            transition: 0.3s;
+        }
+
+        .sidebar:hover .menu-text {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        /* --- MAIN CONTENT --- */
+        .main-content {
+            margin-left: var(--sidebar-collapsed);
+            padding: 60px;
+            width: 100%;
+            box-sizing: border-box;
+            transition: var(--transition);
+        }
+
+        .hero-title { 
+            font-family: 'Syncopate', sans-serif;
+            font-size: clamp(2rem, 5vw, 4rem); 
+            font-weight: 900; 
+            margin-bottom: 40px; 
+            text-transform: uppercase; 
+        }
+        .hero-title span { 
+            color: var(--netflix-red); 
+            text-shadow: 0 0 30px var(--netflix-red-glow); 
+        }
+
+        /* --- DASHBOARD STATS --- */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 25px;
+            margin-bottom: 60px;
+        }
+
+        .stat-card {
+            background: #0a0a0a;
+            padding: 40px;
+            border: 1px solid #1a1a1a;
+            transition: 0.5s;
+        }
+
+        .stat-card:hover { border-color: var(--netflix-red); background: #000; transform: translateY(-5px); }
+        .stat-val { font-size: 3rem; font-weight: 900; color: #fff; display: block; }
+        .stat-label { color: #555; text-transform: uppercase; font-size: 0.7rem; letter-spacing: 2px; font-weight: 700; }
+
+        /* --- CARDS & FORMS --- */
+        .card { background: #0a0a0a; padding: 40px; border: 1px solid #1a1a1a; max-width: 900px; }
+        
+        label { 
+            display: block; font-size: 0.7rem; color: #555; margin-bottom: 10px; 
+            text-transform: uppercase; font-weight: 800; letter-spacing: 2px; 
+        }
+
+        input, textarea { 
+            width: 100%; padding: 16px; background: transparent; color: white; 
+            border: 1px solid #222; margin-bottom: 20px; box-sizing: border-box; 
+            font-family: inherit; transition: 0.3s;
+        }
+
+        input:focus { border-color: var(--netflix-red); outline: none; }
+
+        .submit-btn { 
+            border: 1px solid white; background: transparent; color: white; padding: 18px; width: 100%; 
+            text-transform: uppercase; font-weight: 900; letter-spacing: 3px; cursor: pointer; 
+            transition: 0.4s; position: relative; z-index: 1; 
+        }
+        .submit-btn:hover { color: black; border-color: var(--netflix-red); }
+        .submit-btn::before { content: ''; position: absolute; top: 0; left: 0; width: 0; height: 100%; background: var(--netflix-red); z-index: -1; transition: 0.4s; }
+        .submit-btn:hover::before { width: 100%; }
+
+        /* --- TABLES --- */
+        table { width: 100%; border-collapse: collapse; }
+        th { text-align: left; color: #444; padding: 20px; text-transform: uppercase; font-size: 0.65rem; border-bottom: 1px solid #111; letter-spacing: 2px; }
+        td { padding: 25px 20px; border-bottom: 1px solid #111; font-size: 0.9rem; }
+
+        .status-pill { 
+            font-family: 'Syncopate', sans-serif; 
+            font-size: 0.55rem; padding: 6px 12px; 
+            letter-spacing: 1px; border-radius: 2px;
+        }
+
+        .hidden { display: none; }
+        
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        #tab-dashboard, #tab-create, #tab-history { animation: fadeIn 0.8s ease-out forwards; }
+    </style>
+</head>
+<body>
+
+    <aside class="sidebar">
+        <div class="brand"><span class="brand-text">HUB</span></div>
+        <nav class="menu-list">
+            <div class="menu-item active" onclick="showTab('dashboard', this)">
+                <div class="icon-box gradient-cyan"><i data-lucide="layout-dashboard" size="18"></i></div>
+                <span class="menu-text">Dashboard</span>
+            </div>
+            <div class="menu-item" onclick="showTab('create', this)">
+                <div class="icon-box plus-gradient"><i data-lucide="plus" size="18"></i></div>
+                <span class="menu-text">Create Event</span>
+            </div>
+            <div class="menu-item" onclick="showTab('history', this)">
+                <div class="icon-box orange-gradient"><i data-lucide="history" size="18"></i></div>
+                <span class="menu-text">My History</span>
+            </div>
+        </nav>
+    </aside>
+
+    <main class="main-content">
+        <div id="tab-dashboard">
+            <h1 class="hero-title">ORGANIZER<br><span>CONTROL</span></h1>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <span class="stat-val" id="stat-total-events">0</span>
+                    <span class="stat-label">Total Experiences</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-val" id="stat-students" style="color: var(--netflix-red);">0</span>
+                    <span class="stat-label">Registered Members</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-val" id="stat-approved" style="color: #10b981;">0</span>
+                    <span class="stat-label">Live Events</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-val" id="stat-pending" style="color: #444;">0</span>
+                    <span class="stat-label">In Review</span>
+                </div>
+            </div>
+        </div>
+
+        <div id="tab-create" class="hidden">
+            <h1 class="hero-title">PROPOSE<br><span>EVENT</span></h1>
+            <div class="card">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px;">
+                    <div><label>Organizer Name</label><input type="text" id="orgName" placeholder="NAME"></div>
+                    <div><label>Club / Dept</label><input type="text" id="club" placeholder="ACM / IEEE"></div>
+                </div>
+                <label>Event Title</label><input type="text" id="eventName" placeholder="TITLE">
+                <div style="display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 30px;">
+                    <div><label>Date</label><input type="date" id="eventDate"></div>
+                    <div><label>Start</label><input type="time" id="startTime"></div>
+                    <div><label>End</label><input type="time" id="endTime"></div>
+                </div>
+                <label>Description</label><textarea id="desc" rows="4" placeholder="EVENT DETAILS..."></textarea>
+                <button class="submit-btn" onclick="send()">Submit for Approval</button>
+            </div>
+        </div>
+
+        <div id="tab-history" class="hidden">
+            <h1 class="hero-title">SUBMISSION<br><span>LOG</span></h1>
+            <div class="card" style="max-width: 100%; padding: 0; background: transparent; border: none;">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>EXPERIENCE & SCHEDULE</th>
+                            <th>ENGAGEMENT</th>
+                            <th style="text-align:right">STATUS</th>
+                        </tr>
+                    </thead>
+                    <tbody id="histBody"></tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        lucide.createIcons();
+        const socket = new WebSocket('ws://localhost:3000');
+        let myEvents = [];
+
+        socket.onopen = () => socket.send(JSON.stringify({ type: 'REGISTER', role: 'organizer' }));
+
+        function showTab(tab, el) {
+            document.getElementById('tab-dashboard').classList.toggle('hidden', tab !== 'dashboard');
+            document.getElementById('tab-create').classList.toggle('hidden', tab !== 'create');
+            document.getElementById('tab-history').classList.toggle('hidden', tab !== 'history');
+            
+            document.querySelectorAll('.menu-item').forEach(i => i.classList.remove('active'));
+            el.classList.add('active');
+        }
+
+        function updateDashboard() {
+            document.getElementById('stat-total-events').innerText = myEvents.length;
+            document.getElementById('stat-approved').innerText = myEvents.filter(e => e.status === 'approve').length;
+            document.getElementById('stat-pending').innerText = myEvents.filter(e => e.status === 'pending').length;
+            
+            const totalStudents = myEvents.reduce((acc, ev) => acc + (ev.reg_count || 0), 0);
+            document.getElementById('stat-students').innerText = totalStudents;
+        }
+
+        function send() {
+            // FIX: Retrieve values from input fields
+            const name = document.getElementById('eventName').value;
+            const org = document.getElementById('orgName').value;
+            const clubName = document.getElementById('club').value;
+            const date = document.getElementById('eventDate').value;
+            const start = document.getElementById('startTime').value;
+            const end = document.getElementById('endTime').value;
+            const desc = document.getElementById('desc').value;
+
+            if (!name || !date || !start || !end) {
+                alert("Please fill in required fields.");
+                return;
+            }
+
+            const payload = {
+                id: 'ID-' + Date.now(),
+                name: name,
+                club: `${org} | ${clubName}`,
+                desc: desc,
+                date: date,
+                time: `${start} - ${end}`,
+                reg_count: 0,
+                status: 'pending'
+            };
+
+            socket.send(JSON.stringify({ type: 'NEW_EVENT_REQUEST', payload }));
+            alert("Proposal Sent Successfully!");
+            document.querySelectorAll('input, textarea').forEach(i => i.value = "");
+        }
+
+        socket.onmessage = (msg) => {
+            const data = JSON.parse(msg.data);
+            if (data.type === 'SYNC_DATA') {
+                myEvents = data.payload;
+                updateDashboard();
+
+                const tbody = document.getElementById('histBody');
+                tbody.innerHTML = "";
+                myEvents.forEach(ev => {
+                    const row = tbody.insertRow();
+                    let color = ev.status === 'approve' ? '#10b981' : (ev.status === 'reject' ? '#e50914' : '#f59e0b');
+                    
+                    row.innerHTML = `
+                        <td>
+                            <div style="font-weight:900; color:#fff; text-transform:uppercase; letter-spacing:1px;">${ev.name}</div>
+                            <div style="font-size:0.7rem; color:#555; margin-top:5px; font-weight:700;">
+                                DATE: ${ev.date || 'TBA'} | TIME: ${ev.time || 'TBA'}
+                            </div>
+                        </td>
+                        <td style="color:#888; font-size:0.8rem; font-weight:700;">
+                            ${ev.club.toUpperCase()}<br>
+                            <span style="color:var(--netflix-red); letter-spacing:1px;">${ev.reg_count || 0} REGISTERED</span>
+                        </td>
+                        <td style="text-align:right">
+                            <span class="status-pill" style="color:${color}; border: 1px solid ${color}; padding: 4px 10px;">
+                                ${ev.status.toUpperCase()}
+                            </span>
+                        </td>`;
+                });
+                lucide.createIcons();
+            }
+        };
+    </script>
+</body>
+</html>
